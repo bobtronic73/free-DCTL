@@ -5,6 +5,7 @@
 //
 // written by Matthias Bober, 19th of December 2022
 
+DEFINE_UI_PARAMS(source, Source, DCTLUI_COMBO_BOX, 1, { LINEAR, SLOG }, { Linear, S-Log })
 DEFINE_UI_PARAMS(m1y, R-G, DCTLUI_SLIDER_FLOAT, 0.053f, -1.0f, 1.0f, 0.01f)
 DEFINE_UI_PARAMS(m1z, R-B, DCTLUI_SLIDER_FLOAT, 0.041f, -1.0f, 1.0f, 0.01f)
 DEFINE_UI_PARAMS(m2x, G-R, DCTLUI_SLIDER_FLOAT, -0.015f, -1.0f, 1.0f, 0.01f)
@@ -40,13 +41,30 @@ __DEVICE__ float lin_to_SLog1(float lin)
 
 __DEVICE__ float3 transform(int p_Width, int p_Height, int p_X, int p_Y, float p_R, float p_G, float p_B)
 {
-	const float lin_R = SLog1_to_lin(p_R * 1023.f);
-	const float lin_G = SLog1_to_lin(p_G * 1023.f);
-	const float lin_B = SLog1_to_lin(p_B * 1023.f);
+	float lin_R = p_R;
+	float lin_G = p_G;
+	float lin_B = p_B;
 
-	const float r = ((1.0f - m1y - m1z) * lin_R) + (m1y * lin_G) + (m1z * lin_B);
-	const float g = (m2x * lin_R) + ((1.0f - m2x - m2z) * lin_G) + (m2z * lin_B);
-	const float b = (m3x * lin_R) + (m3y * lin_G) + ((1.0f - m3x - m3y) * lin_B);
+	float r = 0.0f;
+	float g = 0.0f;
+	float b = 0.0f;
 
-	return make_float3(lin_to_SLog1(r), lin_to_SLog1(g), lin_to_SLog1(b));
+	if (source == SLOG)
+	{
+		lin_R = SLog1_to_lin(p_R * 1023.f);
+		lin_G = SLog1_to_lin(p_G * 1023.f);
+		lin_B = SLog1_to_lin(p_B * 1023.f);
+
+		r = lin_to_SLog1(((1.0f - m1y - m1z) * lin_R) + (m1y * lin_G) + (m1z * lin_B));
+		g = lin_to_SLog1((m2x * lin_R) + ((1.0f - m2x - m2z) * lin_G) + (m2z * lin_B));
+		b = lin_to_SLog1((m3x * lin_R) + (m3y * lin_G) + ((1.0f - m3x - m3y) * lin_B));
+	}
+	else
+	{
+		r = ((1.0f - m1y - m1z) * lin_R) + (m1y * lin_G) + (m1z * lin_B);
+		g = (m2x * lin_R) + ((1.0f - m2x - m2z) * lin_G) + (m2z * lin_B);
+		b = (m3x * lin_R) + (m3y * lin_G) + ((1.0f - m3x - m3y) * lin_B);
+	}
+
+	return make_float3(r, g, b);
 }
