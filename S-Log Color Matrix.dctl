@@ -44,22 +44,9 @@ __DEVICE__ float3 transform(int p_Width, int p_Height, int p_X, int p_Y, float p
 	const float lin_G = SLog1_to_lin(p_G * 1023.f);
 	const float lin_B = SLog1_to_lin(p_B * 1023.f);
 
-	const float m1r = 1.0f - m1y - m1z;
-	const float m1g = m1y;
-	const float m1b = m1z;
+	const float r = ((1.0f - m1y - m1z) * lin_R) + (m1y * lin_G) + (m1z * lin_B);
+	const float g = (m2x * lin_R) + ((1.0f - m2x - m2z) * lin_G) + (m2z * lin_B);
+	const float b = (m3x * lin_R) + (m3y * lin_G) + ((1.0f - m3x - m3y) * lin_B);
 
-	const float m2r = m2x;
-	const float m2g = 1.0f - m2x - m2z;
-	const float m2b = m2z;
-
-	const float m3r = m3x;
-	const float m3g = m3y;
-	const float m3b = 1.0f - m3x - m3y;
-
-	float r = (m1r * lin_R) + (m1g * lin_G) + (m1b * lin_B);
-	float g = (m2r * lin_R) + (m2g * lin_G) + (m2b * lin_B);
-	float b = (m3r * lin_R) + (m3g * lin_G) + (m3b * lin_B);
-
-	const float3 result = make_float3(lin_to_SLog1(r), lin_to_SLog1(g), lin_to_SLog1(b));
-	return result;
+	return make_float3(lin_to_SLog1(r), lin_to_SLog1(g), lin_to_SLog1(b));
 }
