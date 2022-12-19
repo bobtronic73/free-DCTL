@@ -1,0 +1,65 @@
+// custom normalized color matrix for S-Log footage
+// defaults are Sony F35 S-Gamut color matrix for S-Log footage of the Sony PMW-F3
+// obtained by reference color chart footage and various other footage
+// the DCTL linearizes the S-Log signal and applies the color matrix, then converts back to S-Log
+//
+// written by Matthias Bober, 19th of December 2022
+
+DEFINE_UI_PARAMS(m1y, R-G, DCTLUI_SLIDER_FLOAT, 0.053f, -1.0f, 1.0f, 0.01f)
+DEFINE_UI_PARAMS(m1z, R-B, DCTLUI_SLIDER_FLOAT, 0.041f, -1.0f, 1.0f, 0.01f)
+DEFINE_UI_PARAMS(m2x, G-R, DCTLUI_SLIDER_FLOAT, -0.015f, -1.0f, 1.0f, 0.01f)
+DEFINE_UI_PARAMS(m2z, G-B, DCTLUI_SLIDER_FLOAT, -0.061f, -1.0f, 1.0f, 0.01f)
+DEFINE_UI_PARAMS(m3x, B-R, DCTLUI_SLIDER_FLOAT, 0.059f, -1.0f, 1.0f, 0.01f)
+DEFINE_UI_PARAMS(m3y, B-G, DCTLUI_SLIDER_FLOAT, -0.374f, -1.0f, 1.0f, 0.01f)
+
+__DEVICE__ float SLog1_to_lin(float SLog)
+{
+	const float b = 64.f;
+	const float ab = 90.f;
+	const float w = 940.f;
+
+	float lin = 0.f;
+
+	if (SLog >= ab)
+		lin = ( pow(10.f, ( ( (SLog - b) / (w - b) - 0.616596f - 0.03f) / 0.432699f)) - 0.037584f) * 0.9f;
+	else
+		lin = ( ( (SLog - b) / (w - b) - 0.030001222851889303f) / 5.f) * 0.9f;
+
+	return lin;
+}
+
+__DEVICE__ float lin_to_SLog1(float lin)
+{
+	const float b = 64.f;
+	const float w = 940.f;
+
+	const float SLog = (((_log10f((lin / 0.9f) + 0.037584f) * 0.432699f) + 0.616596f + 0.03f) * (w - b)) + b;
+
+	return _clampf(SLog / 1023.f, 0.f, 1.f);
+}
+
+__DEVICE__ float3 transform(int p_Width, int p_Height, int p_X, int p_Y, float p_R, float p_G, float p_B)
+{
+	const float lin_R = SLog1_to_lin(p_R * 1023.f);
+	const float lin_G = SLog1_to_lin(p_G * 1023.f);
+	const float lin_B = SLog1_to_lin(p_B * 1023.f);
+
+	const float m1r = 1.0f - m1y - m1z;
+	const float m1g = m1y;
+	const float m1b = m1z;
+
+	const float m2r = m2x;
+	const float m2g = 1.0f - m2x - m2z;
+	const float m2b = m2z;
+
+	const float m3r = m3x;
+	const float m3g = m3y;
+	const float m3b = 1.0f - m3x - m3y;
+
+	float r = (m1r * lin_R) + (m1g * lin_G) + (m1b * lin_B);
+	float g = (m2r * lin_R) + (m2g * lin_G) + (m2b * lin_B);
+	float b = (m3r * lin_R) + (m3g * lin_G) + (m3b * lin_B);
+
+	const float3 result = make_float3(lin_to_SLog1(r), lin_to_SLog1(g), lin_to_SLog1(b));
+	return result;
+}
