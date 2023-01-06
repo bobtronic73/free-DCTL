@@ -5,13 +5,13 @@
 //
 // written by Matthias Bober, 19th of December 2022
 
-DEFINE_UI_PARAMS(source, Source, DCTLUI_COMBO_BOX, 1, { LINEAR, SLOG }, { Linear, S-Log })
-DEFINE_UI_PARAMS(m1y, R-G, DCTLUI_SLIDER_FLOAT, 0.053f, -1.0f, 1.0f, 0.01f)
-DEFINE_UI_PARAMS(m1z, R-B, DCTLUI_SLIDER_FLOAT, 0.041f, -1.0f, 1.0f, 0.01f)
-DEFINE_UI_PARAMS(m2x, G-R, DCTLUI_SLIDER_FLOAT, -0.015f, -1.0f, 1.0f, 0.01f)
-DEFINE_UI_PARAMS(m2z, G-B, DCTLUI_SLIDER_FLOAT, -0.061f, -1.0f, 1.0f, 0.01f)
-DEFINE_UI_PARAMS(m3x, B-R, DCTLUI_SLIDER_FLOAT, 0.059f, -1.0f, 1.0f, 0.01f)
-DEFINE_UI_PARAMS(m3y, B-G, DCTLUI_SLIDER_FLOAT, -0.374f, -1.0f, 1.0f, 0.01f)
+DEFINE_UI_PARAMS(source, Source, DCTLUI_COMBO_BOX, 1, { LINEAR, SLOG, SLOG3 }, { Linear, S-Log, S-Log3 })
+DEFINE_UI_PARAMS(m1y, R-G, DCTLUI_SLIDER_FLOAT, 0.f, -1.0f, 1.0f, 0.01f)
+DEFINE_UI_PARAMS(m1z, R-B, DCTLUI_SLIDER_FLOAT, 0.f, -1.0f, 1.0f, 0.01f)
+DEFINE_UI_PARAMS(m2x, G-R, DCTLUI_SLIDER_FLOAT, 0.f, -1.0f, 1.0f, 0.01f)
+DEFINE_UI_PARAMS(m2z, G-B, DCTLUI_SLIDER_FLOAT, 0.f, -1.0f, 1.0f, 0.01f)
+DEFINE_UI_PARAMS(m3x, B-R, DCTLUI_SLIDER_FLOAT, 0.f, -1.0f, 1.0f, 0.01f)
+DEFINE_UI_PARAMS(m3y, B-G, DCTLUI_SLIDER_FLOAT, 0.f, -1.0f, 1.0f, 0.01f)
 
 __DEVICE__ float SLog1_to_lin(float SLog)
 {
@@ -39,6 +39,39 @@ __DEVICE__ float lin_to_SLog1(float lin)
 	return _clampf(SLog / 1023.f, 0.f, 1.f);
 }
 
+__DEVICE__ float SLog3_to_lin(float SLog3)
+{
+	float out = 0.f;
+
+	if (SLog3 >= 171.2102946929f / 1023.f)
+	{
+		out = pow(10.f, (SLog3*1023.f-420.f)/261.5f)*(0.18f+0.01f)-0.01f;
+	}
+	else
+	{
+		out = (SLog3*1023.f-95.f)*0.01125000f/(171.2102946929f-95.f);
+	}
+
+	return out;
+}
+
+__DEVICE__ float lin_to_SLog3(float lin)
+{
+	float out = 0.f;
+
+	if (lin >= 0.01125f)
+	{
+		out = (420.f + _log10f((lin + 0.01f) / (0.18f + 0.01f)) * 261.5f) / 1023.f;
+	}
+	else
+	{
+		out = (lin * (171.2102946929f - 95.f)/0.01125f + 95.f) / 1023.f;
+	}
+
+	return _clampf(out, 0.f, 1.f);
+}
+
+
 __DEVICE__ float3 transform(int p_Width, int p_Height, int p_X, int p_Y, float p_R, float p_G, float p_B)
 {
 	float lin_R = p_R;
@@ -59,7 +92,17 @@ __DEVICE__ float3 transform(int p_Width, int p_Height, int p_X, int p_Y, float p
 		g = lin_to_SLog1((m2x * lin_R) + ((1.0f - m2x - m2z) * lin_G) + (m2z * lin_B));
 		b = lin_to_SLog1((m3x * lin_R) + (m3y * lin_G) + ((1.0f - m3x - m3y) * lin_B));
 	}
-	else
+	else if (source == SLOG3)
+	{
+		lin_R = SLog3_to_lin(p_R);
+		lin_G = SLog3_to_lin(p_G);
+		lin_B = SLog3_to_lin(p_B);
+
+		r = lin_to_SLog3(((1.0f - m1y - m1z) * lin_R) + (m1y * lin_G) + (m1z * lin_B));
+		g = lin_to_SLog3((m2x * lin_R) + ((1.0f - m2x - m2z) * lin_G) + (m2z * lin_B));
+		b = lin_to_SLog3((m3x * lin_R) + (m3y * lin_G) + ((1.0f - m3x - m3y) * lin_B));
+	}
+	else if (source == LINEAR)
 	{
 		r = ((1.0f - m1y - m1z) * lin_R) + (m1y * lin_G) + (m1z * lin_B);
 		g = (m2x * lin_R) + ((1.0f - m2x - m2z) * lin_G) + (m2z * lin_B);
