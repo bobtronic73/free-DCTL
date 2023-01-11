@@ -22,3 +22,12 @@ The DCTL comes with a few parameters.
 
 * R-G, R-B, G-R, G-B, B-R, B-G - the simplified 2x3 matrix
 * Source - the type of source (Linear, S-Log, S-Log3)
+
+### Examples
+Matrix to match the Sony PMW-F3 to the Sony F35
+* R-G: 0.099
+* R-B: 0.075
+* G-R: -0.050
+* G-B: -0.043
+* B-R: 0.020
+* B-G: -0.305
