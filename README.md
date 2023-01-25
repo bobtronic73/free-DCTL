@@ -31,3 +31,6 @@ Matrix to match the Sony PMW-F3 to the Sony F35
 * G-B: -0.043
 * B-R: 0.020
 * B-G: -0.305
+
+## Ramp
+A linear ramp generator. Useful to check out LUT responses and color space transforms etc.

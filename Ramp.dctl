@@ -1,0 +1,12 @@
+// linear grayscale ramp
+//
+// written by Matthias Bober, 25th of December 2023
+
+__DEVICE__ float3 transform(int p_Width, int p_Height, int p_X, int p_Y, float p_R, float p_G, float p_B)
+{
+	const float width = p_Width - 1;
+	float x = p_X;
+	x = x / width;
+
+	return make_float3(x, x, x);
+}
