@@ -18,8 +18,6 @@ Color matrix applied. Notice rich more natural colors.
 ![StillWithMatrix](docs/images/still_matrix.jpg)
 
 ### Parameters
-The DCTL comes with a few parameters.
-
 * R-G, R-B, G-R, G-B, B-R, B-G - the simplified 2x3 matrix
 * Source - the type of source (Linear, S-Log, S-Log3)
 
@@ -33,4 +31,9 @@ Matrix to match the Sony PMW-F3 to the Sony F35
 * B-G: -0.305
 
 ## Ramp
-A linear ramp generator. Useful to check out LUT responses and color space transforms etc.
+A ramp generator. Useful to check out LUT responses and color space transforms etc.
+It offer both linear and exposure ramp with either adjustable slope or stops.
+
+### Parameters
+* Stops: The linear slope factor or exposure stops when in Exposure mode
+* Exposure Ramp: when enabled the ramp is expressed as exposure stops

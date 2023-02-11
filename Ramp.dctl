@@ -1,12 +1,22 @@
-// linear grayscale ramp
+// linear or exposure grayscale ramp
 //
-// written by Matthias Bober, 25th of December 2023
+// written by Matthias Bober, 11th of February 2023
+
+DEFINE_UI_PARAMS(p_stops, Stops, DCTLUI_SLIDER_FLOAT, 1.f, 0.f, 32.f, 0.1f)
+DEFINE_UI_PARAMS(p_exposure, Exposure Ramp, DCTLUI_CHECK_BOX, 0)
+
 
 __DEVICE__ float3 transform(int p_Width, int p_Height, int p_X, int p_Y, float p_R, float p_G, float p_B)
 {
 	const float width = p_Width - 1;
 	float x = p_X;
 	x = x / width;
+	if (p_exposure)
+	{
+		x = 0.18f * _powf(2.f, (x - 0.5f) * p_stops);
+	}
+	else
+		x = x * p_stops;
 
 	return make_float3(x, x, x);
 }
