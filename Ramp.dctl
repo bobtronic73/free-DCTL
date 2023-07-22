@@ -1,8 +1,9 @@
 // linear or exposure grayscale ramp
 //
-// written by Matthias Bober, 11th of February 2023
+// written by Matthias Bober, 8th of July 2023
 
-DEFINE_UI_PARAMS(p_stops, Stops, DCTLUI_SLIDER_FLOAT, 1.f, 0.f, 32.f, 0.1f)
+DEFINE_UI_PARAMS(p_gray, Gray, DCTLUI_VALUE_BOX, 0.18f)
+DEFINE_UI_PARAMS(p_stops, Stops, DCTLUI_SLIDER_FLOAT, 1.f, 0.f, 100.f, 0.1f)
 DEFINE_UI_PARAMS(p_exposure, Exposure Ramp, DCTLUI_CHECK_BOX, 0)
 
 
@@ -13,7 +14,7 @@ __DEVICE__ float3 transform(int p_Width, int p_Height, int p_X, int p_Y, float p
 	x = x / width;
 	if (p_exposure)
 	{
-		x = 0.18f * _powf(2.f, (x - 0.5f) * p_stops);
+		x = p_gray * _powf(2.f, (x - 0.5f) * p_stops);
 	}
 	else
 		x = x * p_stops;

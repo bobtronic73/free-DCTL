@@ -1,9 +1,6 @@
-// custom normalized color matrix for S-Log footage
-// defaults are Sony F35 S-Gamut color matrix for S-Log footage of the Sony PMW-F3
-// obtained by reference color chart footage and various other footage
-// the DCTL linearizes the S-Log signal and applies the color matrix, then converts back to S-Log
+// custom normalized color matrix for S-Log, S-Log3 and linear footage
 //
-// written by Matthias Bober, 19th of December 2022
+// written by Matthias Bober, 7th of January 2023
 
 DEFINE_UI_PARAMS(source, Source, DCTLUI_COMBO_BOX, 1, { LINEAR, SLOG, SLOG3 }, { Linear, S-Log, S-Log3 })
 DEFINE_UI_PARAMS(m1y, R-G, DCTLUI_SLIDER_FLOAT, 0.f, -1.0f, 1.0f, 0.01f)

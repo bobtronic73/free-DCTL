@@ -37,3 +37,10 @@ It offer both linear and exposure ramp with either adjustable slope or stops.
 ### Parameters
 * Stops: The linear slope factor or exposure stops when in Exposure mode
 * Exposure Ramp: when enabled the ramp is expressed as exposure stops
+* Gray: Value of mid gray
+
+## Value
+A simple value generator, useful for testing.
+
+### Parameters
+* Value: The output value of the generator
