@@ -1,0 +1,32 @@
+DEFINE_ACES_PARAM(IS_PARAMETRIC_ACES_TRANSFORM: 0)
+
+//-------------  Custom ProPhoto (Texture) IDT  -------------//
+//
+// Converts ProPhoto to ACES data with no RRT or tone mapping.
+//
+// Input: ProPhoto
+// Output: ACES AP0/Linear
+
+__DEVICE__ inline float ProPhotoDecodeGamma(float p_Input)
+{
+    const float cLinear = 0.03125f;
+    const float slope = 16.0f;
+    const float gamma = 1.8f;
+
+    return ((p_Input <= cLinear) ? (p_Input / slope) : (_clampf(_powf(p_Input, gamma), 0.0f, 1.0f)));
+}
+
+__DEVICE__ float3 transform(int p_Width, int p_Height, int p_X, int p_Y, float p_R, float p_G, float p_B)
+{
+    //linearize
+    const float r = ProPhotoDecodeGamma(p_R);
+    const float g = ProPhotoDecodeGamma(p_G);
+    const float b = ProPhotoDecodeGamma(p_B);
+
+    //ProPhoto to ACES
+    const float rt = (0.805225f * r) + (0.124665f * g) + (0.070110f * b);
+    const float gt = (-0.004325f * r) + (0.921790f * g) + (0.082535f * b);
+    const float bt = (0.002707f * r) + (-0.008849f * g) + (1.006142f * b);
+
+    return make_float3(rt, gt, bt);
+}
