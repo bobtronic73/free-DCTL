@@ -1,0 +1,42 @@
+__DEVICE__ float SLog1_to_lin(float SLog)
+{
+	const float b = 64.f;
+	const float ab = 90.f;
+	const float w = 940.f;
+
+	float lin = 0.f;
+
+	if (SLog >= ab)
+		lin = ( pow(10.f, ( ( (SLog - b) / (w - b) - 0.616596f - 0.03f) / 0.432699f)) - 0.037584f) * 0.9f;
+	else
+		lin = ( ( (SLog - b) / (w - b) - 0.030001222851889303f) / 5.f) * 0.9f;
+
+	return lin;
+}
+
+__DEVICE__ float lin_to_SLog1(float lin)
+{
+	const float b = 64.f;
+	const float w = 940.f;
+
+	const float SLog = (((_log10f((lin / 0.9f) + 0.037584f) * 0.432699f) + 0.616596f + 0.03f) * (w - b)) + b;
+
+	return _clampf(SLog / 1023.f, 0.f, 1.f);
+}
+
+__DEVICE__ float3 transform(int p_Width, int p_Height, int p_X, int p_Y, float p_R, float p_G, float p_B)
+{
+	const float r = SLog1_to_lin(p_R * 1023.0f);
+	const float g = SLog1_to_lin(p_G * 1023.0f);
+	const float b = SLog1_to_lin(p_B * 1023.0f);
+
+	float rt = (1.30624f * r) + (-0.233075f * g) + (-0.073165f * b);
+	float gt = (-0.126851f * r) + (1.178376f * g) + (-0.051526f * b);
+	float bt = (0.00012f * r) + (-0.085649f * g) + (1.085529f * b);
+
+	rt = lin_to_SLog1(rt);
+	gt = lin_to_SLog1(gt);
+	bt = lin_to_SLog1(bt);
+
+	return make_float3(rt, gt, bt);
+}
