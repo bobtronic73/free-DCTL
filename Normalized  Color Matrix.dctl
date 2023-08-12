@@ -1,14 +1,13 @@
 // custom normalized color matrix for S-Log, S-Log3 and linear footage
-//
-// written by Matthias Bober, 7th of January 2023
+// written by Matthias Bober
 
 DEFINE_UI_PARAMS(source, Source, DCTLUI_COMBO_BOX, 1, { LINEAR, SLOG, SLOG3 }, { Linear, S-Log, S-Log3 })
-DEFINE_UI_PARAMS(m1y, R-G, DCTLUI_SLIDER_FLOAT, 0.f, -1.0f, 1.0f, 0.01f)
-DEFINE_UI_PARAMS(m1z, R-B, DCTLUI_SLIDER_FLOAT, 0.f, -1.0f, 1.0f, 0.01f)
-DEFINE_UI_PARAMS(m2x, G-R, DCTLUI_SLIDER_FLOAT, 0.f, -1.0f, 1.0f, 0.01f)
-DEFINE_UI_PARAMS(m2z, G-B, DCTLUI_SLIDER_FLOAT, 0.f, -1.0f, 1.0f, 0.01f)
-DEFINE_UI_PARAMS(m3x, B-R, DCTLUI_SLIDER_FLOAT, 0.f, -1.0f, 1.0f, 0.01f)
-DEFINE_UI_PARAMS(m3y, B-G, DCTLUI_SLIDER_FLOAT, 0.f, -1.0f, 1.0f, 0.01f)
+DEFINE_UI_PARAMS(m1y, R-G, DCTLUI_SLIDER_FLOAT, 0.099f, -1.0f, 1.0f, 0.01f)
+DEFINE_UI_PARAMS(m1z, R-B, DCTLUI_SLIDER_FLOAT, 0.075f, -1.0f, 1.0f, 0.01f)
+DEFINE_UI_PARAMS(m2x, G-R, DCTLUI_SLIDER_FLOAT, -0.05f, -1.0f, 1.0f, 0.01f)
+DEFINE_UI_PARAMS(m2z, G-B, DCTLUI_SLIDER_FLOAT, -0.043f, -1.0f, 1.0f, 0.01f)
+DEFINE_UI_PARAMS(m3x, B-R, DCTLUI_SLIDER_FLOAT,  0.02f, -1.0f, 1.0f, 0.01f)
+DEFINE_UI_PARAMS(m3y, B-G, DCTLUI_SLIDER_FLOAT, -0.305f, -1.0f, 1.0f, 0.01f)
 
 __DEVICE__ float SLog1_to_lin(float SLog)
 {
