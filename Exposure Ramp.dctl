@@ -1,0 +1,29 @@
+// linear or exposure grayscale ramp
+//
+// written by Matthias Bober, 8th of July 2023
+
+DEFINE_UI_PARAMS(p_stops_up, Stops Up, DCTLUI_SLIDER_FLOAT, 5.3f, 0.f, 100.f, 0.1f)
+DEFINE_UI_PARAMS(p_stops_down, Stops Down, DCTLUI_SLIDER_FLOAT, 6.8f, 0.f, 100.f, 0.1f)
+DEFINE_UI_PARAMS(p_iso, ISO, DCTLUI_VALUE_BOX, 450.f)
+DEFINE_UI_PARAMS(p_base_iso, Base ISO, DCTLUI_VALUE_BOX, 450.f)
+DEFINE_UI_PARAMS(p_show_gray, Show Middle Gray, DCTLUI_CHECK_BOX, 1)
+
+
+__DEVICE__ float3 transform(int p_Width, int p_Height, int p_X, int p_Y, float p_R, float p_G, float p_B)
+{
+	const float width = p_Width - 1;
+	const float height = p_Height - 1;
+
+	float x = p_X / width;
+	float y = p_Y / height;
+
+	float p_stops = p_stops_up + p_stops_down;
+	float gray = (p_base_iso / p_iso) * 0.18f;
+
+	x = gray * _powf(2.f, (x - (p_stops_down / p_stops)) * p_stops);
+
+	if (y > 0.5f && p_show_gray)
+		return make_float3(gray, gray, gray);
+
+	return make_float3(x, x, x);
+}

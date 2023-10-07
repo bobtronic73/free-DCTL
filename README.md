@@ -30,7 +30,7 @@ Matrix to match the Sony PMW-F3 to the Sony F35
 * B-R: 0.020
 * B-G: -0.305
 
-## Ramp
+## Simple Ramp
 A ramp generator. Useful to check out LUT responses and color space transforms etc.
 It offer both linear and exposure ramp with either adjustable slope or stops.
 
@@ -38,6 +38,17 @@ It offer both linear and exposure ramp with either adjustable slope or stops.
 * Stops: The linear slope factor or exposure stops when in Exposure mode
 * Exposure Ramp: when enabled the ramp is expressed as exposure stops
 * Gray: Value of mid gray
+
+## Expsure Ramp
+Another ramp generator. Useful to check out LUT responses and color space transforms etc.
+It offers an exposure ramp with adjustable stops below and above middle gray as well as shifting the exposure index.
+
+### Parameters
+* Stops Up: Stops over middle gray
+* Stops Down: Stops below middle gray
+* ISO: Exposure index
+* Base ISO: Base ISO, needed to calculate middle gray to gether with the exposure index
+* Show Gray: Enable to show middle gray value area
 
 ## Value
 A simple value generator, useful for testing.
