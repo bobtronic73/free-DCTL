@@ -1,0 +1,86 @@
+DEFINE_UI_PARAMS(a1g, A R-G, DCTLUI_SLIDER_FLOAT, -0.212545f, -1.0f, 1.0f, 0.001f)
+DEFINE_UI_PARAMS(a1b, A R-B, DCTLUI_SLIDER_FLOAT, -0.210056f, -1.0f, 1.0f, 0.001f)
+DEFINE_UI_PARAMS(a2r, A G-R, DCTLUI_SLIDER_FLOAT, -0.221604f, -1.0f, 1.0f, 0.001f)
+DEFINE_UI_PARAMS(a2b, A G-B, DCTLUI_SLIDER_FLOAT, -0.138501f, -1.0f, 1.0f, 0.001f)
+DEFINE_UI_PARAMS(a3r, A B-R, DCTLUI_SLIDER_FLOAT, -0.00232421f, -1.0f, 1.0f, 0.001f)
+DEFINE_UI_PARAMS(a3g, A B-G, DCTLUI_SLIDER_FLOAT, -0.120267f, -1.0f, 1.0f, 0.001f)
+
+DEFINE_UI_PARAMS(m1g, R-G, DCTLUI_SLIDER_FLOAT, -0.307114f, -1.0f, 1.0f, 0.001f)
+DEFINE_UI_PARAMS(m1b, R-B, DCTLUI_SLIDER_FLOAT, -0.0509725f, -1.0f, 1.0f, 0.001f)
+DEFINE_UI_PARAMS(m2r, G-R, DCTLUI_SLIDER_FLOAT, -0.0907881f, -1.0f, 1.0f, 0.001f)
+DEFINE_UI_PARAMS(m2b, G-B, DCTLUI_SLIDER_FLOAT, 0.0414723f, -1.0f, 1.0f, 0.001f)
+DEFINE_UI_PARAMS(m3r, B-R, DCTLUI_SLIDER_FLOAT, -0.277779f, -1.0f, 1.0f, 0.001f)
+DEFINE_UI_PARAMS(m3g, B-G, DCTLUI_SLIDER_FLOAT, -0.0368331f, -1.0f, 1.0f, 0.001f)
+
+
+__CONSTANT__ float2 LUT_1D[11] =
+{
+    {-6.000000000000000f, -0.190f},
+    {-2.721718645000000f, 0.010f},
+    {-2.521718645000000f, 0.028f},
+    {-2.321718645000000f, 0.054f},
+    {-2.121718645000000f, 0.095f},
+    {-1.921718645000000f, 0.145f},
+    {-1.721718645000000f, 0.220f},
+    {-1.521718645000000f, 0.300f},
+    {-1.321718645000000f, 0.400f},
+    {-1.121718645000000f, 0.500f},
+    {-0.926545676714876f, 0.600f}
+};
+
+__DEVICE__ float interpolate1D(__CONSTANTREF__ float2* p_Table, int p_Size, float p_Val)
+{
+    if (p_Val < p_Table[0].x)
+    {
+        return p_Table[0].y;
+    }
+
+    if (p_Val >= p_Table[p_Size - 1].x)
+    {
+        return p_Table[p_Size - 1].y;
+    }
+
+    for (int i = 0; i < p_Size; ++i)
+    {
+        if (p_Val >= p_Table[i].x && p_Val < p_Table[i + 1].x)
+        {
+            float t = (p_Val - p_Table[i].x) / (p_Table[i + 1].x - p_Table[i].x);
+            return (1 - t) * p_Table[i].y + t * p_Table[i + 1].y;
+        }
+    }
+
+    return 0.0f; // won't reach here
+}
+
+__DEVICE__ float3 transform(int p_Width, int p_Height, int p_X, int p_Y, float p_R, float p_G, float p_B)
+{
+    float r = ((1.0f - a1g - a1b) * p_R) + (a1g * p_G) + (a1b * p_B);
+    float g = (a2r * p_R) + ((1.0f - a2r - a2b) * p_G) + (a2b * p_B);
+    float b = (a3r * p_R) + (a3g * p_G) + ((1.0f - a3r - a3g) * p_B);
+
+    r = _log10f(r);
+    g = _log10f(g);
+    b = _log10f(b);
+
+    float lgr = 0.f;
+    float lgg = 0.f;
+    float lgb = 0.f;
+
+    if (r <= -0.926545676714876f) lgr = interpolate1D(&LUT_1D[0], 11, r);
+    if (g <= -0.926545676714876f) lgg = interpolate1D(&LUT_1D[0], 11, g);
+    if (b <= -0.926545676714876f) lgb = interpolate1D(&LUT_1D[0], 11, b);
+
+    if (r > -0.926545676714876f) lgr = (r + 2.017454767623967f) / (100.f / 55.f);
+    if (g > -0.926545676714876f) lgg = (g + 2.017454767623967f) / (100.f / 55.f);
+    if (b > -0.926545676714876f) lgb = (b + 2.017454767623967f) / (100.f / 55.f);
+
+    r = ((1.0f - m1g - m1b) * lgr) + (m1g * lgg) + (m1b * lgb);
+    g = (m2r * lgr) + ((1.0f - m2r - m2b) * lgg) + (m2b * lgb);
+    b = (m3r * lgr) + (m3g * lgg) + ((1.0f - m3r - m3g) * lgb);
+
+    r = ((r * 500.f) + 95.f) / 1023.f;
+    g = ((g * 500.f) + 95.f) / 1023.f;
+    b = ((b * 500.f) + 95.f) / 1023.f;
+
+	return make_float3(r, g, b);
+}
