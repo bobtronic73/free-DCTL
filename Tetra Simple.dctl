@@ -1,0 +1,71 @@
+// simplified tetra transformation, Copyright (c) 2024 Matthias Bober
+// based on Tetra DCTL, Copyright (c) 2021 npeason
+
+
+DEFINE_UI_PARAMS(r_G, Red-Green, DCTLUI_SLIDER_FLOAT, 0.0, -1.0, 1.0, 0.001)
+DEFINE_UI_PARAMS(r_B, Red-Blue, DCTLUI_SLIDER_FLOAT, 0.0, -1.0, 1.0, 0.001)
+
+DEFINE_UI_PARAMS(g_R, Green-Red, DCTLUI_SLIDER_FLOAT,  0.0, -1.0, 1.0, 0.001)
+DEFINE_UI_PARAMS(g_B, Green-Blue, DCTLUI_SLIDER_FLOAT,  0.0, -1.0, 1.0, 0.001)
+
+DEFINE_UI_PARAMS(b_R, Blue-Red, DCTLUI_SLIDER_FLOAT,  0.0, -1.0, 1.0, 0.001)
+DEFINE_UI_PARAMS(b_G, Blue-Green, DCTLUI_SLIDER_FLOAT,  0.0, -1.0, 1.0, 0.001)
+
+DEFINE_UI_PARAMS(c_G, Cyan-Green, DCTLUI_SLIDER_FLOAT,  0.0, -1.0, 1.0, 0.001)
+DEFINE_UI_PARAMS(c_B, Cyan-Blue, DCTLUI_SLIDER_FLOAT,  0.0, -1.0, 1.0, 0.001)
+
+DEFINE_UI_PARAMS(m_R, Magenta-Red, DCTLUI_SLIDER_FLOAT,  0.0, -1.0, 1.0, 0.001)
+DEFINE_UI_PARAMS(m_B, Magenta-Blue, DCTLUI_SLIDER_FLOAT,  0.0, -1.0, 1.0, 0.001)
+
+DEFINE_UI_PARAMS(y_R, Yellow-Red, DCTLUI_SLIDER_FLOAT,  0.0, -1.0, 1.0, 0.001)
+DEFINE_UI_PARAMS(y_G, Yellow-Green, DCTLUI_SLIDER_FLOAT,  0.0, -1.0, 1.0, 0.001)
+
+
+__DEVICE__ float3 transform(int p_Width, int p_Height, int p_X, int p_Y, float p_R, float p_G, float p_B)
+{
+    float3 Color;
+    float3 red = make_float3(1.0f - r_G - r_B, r_G, r_B); 
+    float3 grn = make_float3(g_R, 1.0f - g_R - g_B, g_B);
+    float3 blu = make_float3(b_R, b_G, 1.0f - b_R - b_G);
+    float3 cyn = make_float3(- c_G - c_B, c_G + 1.0f, c_B + 1.0f);
+    float3 mag = make_float3(m_R + 1.0f, - m_R - m_B, m_B + 1.0f);
+    float3 yel = make_float3(y_R + 1.0f, y_G + 1.0f,- y_R - y_G);
+    float3 wht = make_float3(1.0f, 1.0f, 1.0f);
+
+
+	if (p_R>p_G)
+    {
+        if (p_G>p_B)
+        {
+            Color = p_R * red + p_G * (yel-red) + p_B * (wht-yel);
+        }
+        else if (p_R>p_B)
+        {
+            Color = p_R * red + p_G * (wht-mag) + p_B * (mag-red);
+        }
+        else
+        {
+            Color = p_R * (mag-blu) + p_G * (wht-mag) + p_B * blu;
+        }
+    }
+    else
+    {      
+        if (p_B>p_G)
+        {
+            Color = p_R * (wht-cyn) + p_G * (cyn-blu) + p_B * blu;
+        }
+        else if (p_B>p_R)
+        {
+            Color = p_R * (wht-cyn) + p_G * grn + p_B * (cyn-grn);
+        }
+        else
+        {
+            Color = p_R * (yel-grn) + p_G * grn + p_B * (wht-yel);
+        }
+    }
+        
+    return Color;
+
+}
+	
+	

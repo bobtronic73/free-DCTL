@@ -61,3 +61,14 @@ Transforms S-Gamut/S-Log1 into F900/S-Log1 color space.
 
 ## ProPhoto
 Transforms ProPhoto color space into ACES AP0, both as DCTL and ACES IDT.
+
+## Tetra Simple
+Another flavor of the Tetra transformation, as described by Steve Yedlin ASC.
+
+This DCTL is based on npeason's DCTL and provides a simplified UI with just 12 parameters, two for each primary. The third omitted paramter is calculated internally to ensure the vector moving along the plane of each tetrahedron. This leads to more stable results and pleasing saturation.
+
+### Credits:
+1. npeason's DCTL: https://github.com/npeason/Tetra-DCTLOFX
+2. calvinsilly's Nuke implementation: https://github.com/calvinsilly/Tetrahedral-Interpolation
+3. EmberLightVFX's Fusion implementation: https://github.com/EmberLightVFX/Tetrahedral-Interpolation-for-Fusion
+4. Yedlin's video hinting at this transform: http://www.yedlin.net/DisplayPrepDemo/DispPrepDemoFollowup.html
