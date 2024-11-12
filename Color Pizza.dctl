@@ -1,0 +1,122 @@
+
+// Slice Tool using tetrahedral transformation, Copyright (c) 2024 Matthias Bober
+// based on Tetra DCTL, Copyright (c) 2021 npeason
+
+DEFINE_UI_PARAMS(r_rot, R - Y-M, DCTLUI_SLIDER_FLOAT, 0.0f, -1.0f, 1.0f, 0.01f)
+DEFINE_UI_PARAMS(r_sat, R - Sat, DCTLUI_SLIDER_FLOAT, 0.0f, -1.0f, 1.0f, 0.01f)
+DEFINE_UI_PARAMS(y_rot, Y - G-R, DCTLUI_SLIDER_FLOAT,  0.0f, -1.0f, 1.0f, 0.01f)
+DEFINE_UI_PARAMS(y_sat, Y - Sat, DCTLUI_SLIDER_FLOAT, 0.0f, -1.0f, 1.0f, 0.01f)
+DEFINE_UI_PARAMS(g_rot, G - C-Y, DCTLUI_SLIDER_FLOAT, 0.0f, -1.0f, 1.0f, 0.01f)
+DEFINE_UI_PARAMS(g_sat, G - Sat, DCTLUI_SLIDER_FLOAT, 0.0f, -1.0f, 1.0f, 0.01f)
+DEFINE_UI_PARAMS(c_rot, C - B-G, DCTLUI_SLIDER_FLOAT,  0.0f, -1.0f, 1.0f, 0.01f)
+DEFINE_UI_PARAMS(c_sat, C - Sat, DCTLUI_SLIDER_FLOAT, 0.0f, -1.0f, 1.0f, 0.01f)
+DEFINE_UI_PARAMS(b_rot, B - M-C, DCTLUI_SLIDER_FLOAT,  0.0f, -1.0f, 1.0f, 0.01f)
+DEFINE_UI_PARAMS(b_sat, B - Sat, DCTLUI_SLIDER_FLOAT, 0.0f, -1.0f, 1.0f, 0.01f)
+DEFINE_UI_PARAMS(m_rot, M - R-B, DCTLUI_SLIDER_FLOAT,  0.0f, -1.0f, 1.0f, 0.01f)
+DEFINE_UI_PARAMS(m_sat, M - Sat, DCTLUI_SLIDER_FLOAT, 0.0f, -1.0f, 1.0f, 0.01f)
+
+
+__CONSTANT__ float max_angle = 2.09439510f;
+__CONSTANT__ float sat_ref = 0.8165f;
+__CONSTANT__ float3 m_off = make_float3(0.333333333f, 0.33333333f, 0.33333333f);
+__CONSTANT__ float3 m_off2 = make_float3(0.666666666f, 0.66666666f, 0.66666666f);
+__CONSTANT__ float3 m_v1 = make_float3(0.707106781f, 0.0f, -0.70710678f);
+__CONSTANT__ float3 m_v2 = make_float3(-0.40824418f, 0.81648837f, -0.40824418f);
+__CONSTANT__ float3 m_v3 = make_float3(0.577350269f, 0.57735026f, 0.57735026f);
+
+
+__DEVICE__ float3 rotate_vector(float3 v, float angle)
+{
+	float3 res = make_float3(0.0f, 0.0f, 0.0f);
+
+	res.x = (v.x * _cosf(angle)) - (v.y * _sinf(angle));
+	res.y = (v.x * _sinf(angle)) + (v.y * _cosf(angle));
+	res.z = v.z;
+
+	return res;
+}
+
+__DEVICE__ float3 transform(int p_Width, int p_Height, int p_X, int p_Y, float p_R, float p_G, float p_B)
+{
+	float3 vr = rotate_vector(make_float3(0.0f, sat_ref * (1.0f + r_sat), 0.0f), (-r_rot * max_angle * 0.5f) - max_angle);
+	float3 vg = rotate_vector(make_float3(0.0f, sat_ref * (1.0f + g_sat), 0.0f), (-g_rot * max_angle * 0.5f));
+	float3 vb = rotate_vector(make_float3(0.0f, sat_ref * (1.0f + b_sat), 0.0f), (-b_rot * max_angle * 0.5f) + max_angle);
+	float3 vc = rotate_vector(make_float3(0.0f, sat_ref * (1.0f + c_sat), 0.0f), (-c_rot * max_angle * 0.5f) + (max_angle * 0.5f));
+	float3 vm = rotate_vector(make_float3(0.0f, sat_ref * (1.0f + m_sat), 0.0f), (-m_rot * max_angle * 0.5f) + (max_angle * 1.5f));
+	float3 vy = rotate_vector(make_float3(0.0f, sat_ref * (1.0f + y_sat), 0.0f), (-y_rot * max_angle * 0.5f) - (max_angle * 0.5f));
+
+	float3 mr = make_float3(0.0f, 0.0f, 0.0f);
+	mr.x = m_off.x + (m_v1.x * vr.x) + (m_v2.x * vr.y) + (m_v3.x * vr.z);
+	mr.y = m_off.y + (m_v1.y * vr.x) + (m_v2.y * vr.y) + (m_v3.y * vr.z);
+	mr.z = m_off.z + (m_v1.z * vr.x) + (m_v2.z * vr.y) + (m_v3.z * vr.z);
+
+	float3 mg = make_float3(0.0f, 0.0f, 0.0f);
+	mg.x = m_off.x + (m_v1.x * vg.x) + (m_v2.x * vg.y) + (m_v3.x * vg.z);
+	mg.y = m_off.y + (m_v1.y * vg.x) + (m_v2.y * vg.y) + (m_v3.y * vg.z);
+	mg.z = m_off.z + (m_v1.z * vg.x) + (m_v2.z * vg.y) + (m_v3.z * vg.z);
+
+	float3 mb = make_float3(0.0f, 0.0f, 0.0f);
+	mb.x = m_off.x + (m_v1.x * vb.x) + (m_v2.x * vb.y) + (m_v3.x * vb.z);
+	mb.y = m_off.y + (m_v1.y * vb.x) + (m_v2.y * vb.y) + (m_v3.y * vb.z);
+	mb.z = m_off.z + (m_v1.z * vb.x) + (m_v2.z * vb.y) + (m_v3.z * vb.z);
+
+	float3 mc = make_float3(0.0f, 0.0f, 0.0f);
+	mc.x = m_off2.x + (m_v1.x * vc.x) + (m_v2.x * vc.y) + (m_v3.x * vc.z);
+	mc.y = m_off2.y + (m_v1.y * vc.x) + (m_v2.y * vc.y) + (m_v3.y * vc.z);
+	mc.z = m_off2.z + (m_v1.z * vc.x) + (m_v2.z * vc.y) + (m_v3.z * vc.z);
+
+	float3 mm = make_float3(0.0f, 0.0f, 0.0f);
+	mm.x = m_off2.x + (m_v1.x * vm.x) + (m_v2.x * vm.y) + (m_v3.x * vm.z);
+	mm.y = m_off2.y + (m_v1.y * vm.x) + (m_v2.y * vm.y) + (m_v3.y * vm.z);
+	mm.z = m_off2.z + (m_v1.z * vm.x) + (m_v2.z * vm.y) + (m_v3.z * vm.z);
+
+	float3 my = make_float3(0.0f, 0.0f, 0.0f);
+	my.x = m_off2.x + (m_v1.x * vy.x) + (m_v2.x * vy.y) + (m_v3.x * vy.z);
+	my.y = m_off2.y + (m_v1.y * vy.x) + (m_v2.y * vy.y) + (m_v3.y * vy.z);
+	my.z = m_off2.z + (m_v1.z * vy.x) + (m_v2.z * vy.y) + (m_v3.z * vy.z);
+
+    float3 Color;
+    float3 red = mr; 
+    float3 grn = mg;
+    float3 blu = mb;
+    float3 cyn = mc;
+    float3 mag = mm;
+    float3 yel = my;
+    float3 wht = make_float3(1.0f, 1.0f, 1.0f);
+
+	if (p_R>p_G)
+    {
+        if (p_G>p_B)
+        {
+            Color = p_R * red + p_G * (yel-red) + p_B * (wht-yel);
+        }
+        else if (p_R>p_B)
+        {
+            Color = p_R * red + p_G * (wht-mag) + p_B * (mag-red);
+        }
+        else
+        {
+            Color = p_R * (mag-blu) + p_G * (wht-mag) + p_B * blu;
+        }
+    }
+    else
+    {      
+        if (p_B>p_G)
+        {
+            Color = p_R * (wht-cyn) + p_G * (cyn-blu) + p_B * blu;
+        }
+        else if (p_B>p_R)
+        {
+            Color = p_R * (wht-cyn) + p_G * grn + p_B * (cyn-grn);
+        }
+        else
+        {
+            Color = p_R * (yel-grn) + p_G * grn + p_B * (wht-yel);
+        }
+    }
+        
+    return Color;
+
+}
+	
+	

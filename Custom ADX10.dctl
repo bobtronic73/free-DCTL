@@ -1,3 +1,6 @@
+// converts ACES 2065-1 into ADX10 but offers custom values for the transformation matrices
+// Copyright (c) 2024 Matthias Bober
+
 DEFINE_UI_PARAMS(a1g, A R-G, DCTLUI_SLIDER_FLOAT, -0.212545f, -1.0f, 1.0f, 0.001f)
 DEFINE_UI_PARAMS(a1b, A R-B, DCTLUI_SLIDER_FLOAT, -0.210056f, -1.0f, 1.0f, 0.001f)
 DEFINE_UI_PARAMS(a2r, A G-R, DCTLUI_SLIDER_FLOAT, -0.221604f, -1.0f, 1.0f, 0.001f)
@@ -54,14 +57,17 @@ __DEVICE__ float interpolate1D(__CONSTANTREF__ float2* p_Table, int p_Size, floa
 
 __DEVICE__ float3 transform(int p_Width, int p_Height, int p_X, int p_Y, float p_R, float p_G, float p_B)
 {
+    // Convert ACES values to Relative Exposure values
     float r = ((1.0f - a1g - a1b) * p_R) + (a1g * p_G) + (a1b * p_B);
     float g = (a2r * p_R) + ((1.0f - a2r - a2b) * p_G) + (a2b * p_B);
     float b = (a3r * p_R) + (a3g * p_G) + ((1.0f - a3r - a3g) * p_B);
 
+    // Convert Relative Exposure values to Relative Log Exposure values
     r = _log10f(r);
     g = _log10f(g);
     b = _log10f(b);
 
+    // Convert Relative Log Exposure values to Channel Independent Density values
     float lgr = 0.f;
     float lgg = 0.f;
     float lgb = 0.f;
@@ -74,10 +80,12 @@ __DEVICE__ float3 transform(int p_Width, int p_Height, int p_X, int p_Y, float p
     if (g > -0.926545676714876f) lgg = (g + 2.017454767623967f) / (100.f / 55.f);
     if (b > -0.926545676714876f) lgb = (b + 2.017454767623967f) / (100.f / 55.f);
 
+    // Convert Channel Independent Density values into Channel Dependent Density values 
     r = ((1.0f - m1g - m1b) * lgr) + (m1g * lgg) + (m1b * lgb);
     g = (m2r * lgr) + ((1.0f - m2r - m2b) * lgg) + (m2b * lgb);
     b = (m3r * lgr) + (m3g * lgg) + ((1.0f - m3r - m3g) * lgb);
 
+    // Convert Channel Dependent Density values to ADX10 values
     r = ((r * 500.f) + 95.f) / 1023.f;
     g = ((g * 500.f) + 95.f) / 1023.f;
     b = ((b * 500.f) + 95.f) / 1023.f;

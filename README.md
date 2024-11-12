@@ -56,11 +56,28 @@ A simple value generator, useful for testing.
 ### Parameters
 * Value: The output value of the generator
 
-## F900 Matrix
-Transforms S-Gamut/S-Log1 into F900/S-Log1 color space.
-
 ## ProPhoto
 Transforms ProPhoto color space into ACES AP0, both as DCTL and ACES IDT.
+
+## Color Pizza
+Similar to DaVinci Resolve's Color Slice. It provides hue shift and saturation for the six primaries.
+
+### Parameters
+* R - Y-M: Red hue shift
+* R - Sat: Red saturation
+* Y - G-R: Yellow hue shift
+* Y - Sat: Yellow saturation
+* G - C-Y: Green hue shift
+* G - Sat: Green saturation
+* C - B-G: Cyan hue shift
+* C - Sat: Cyan saturation
+* B - M-G: Blue hue shift
+* B - Sat: Blue saturation
+* M - R-B: Magenta hue shift
+* M - Sat: Magenta saturation
+
+## Custom ADX10
+Converts ACES 2065-1 into ADX10 with custom matrices. Allows tweaking that film look.
 
 ## Tetra Simple
 Another flavor of the Tetra transformation, as described by Steve Yedlin ASC.
