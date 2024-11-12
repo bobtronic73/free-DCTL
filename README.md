@@ -39,7 +39,7 @@ It offer both linear and exposure ramp with either adjustable slope or stops.
 * Exposure Ramp: when enabled the ramp is expressed as exposure stops
 * Gray: Value of mid gray
 
-## Expsure Ramp
+## Exposure Ramp
 Another ramp generator. Useful to check out LUT responses and color space transforms etc.
 It offers an exposure ramp with adjustable stops below and above middle gray as well as shifting the exposure index.
 
