@@ -79,6 +79,8 @@ Similar to DaVinci Resolve's Color Slice. It provides hue shift and saturation f
 ## Custom ADX10
 Converts ACES 2065-1 into ADX10 with custom matrices. Allows tweaking that film look.
 
+The defaults are based on Alexa Classic film style matrix and Dmin set for DR 2383 D65 LUT.
+
 ## Tetra Simple
 Another flavor of the Tetra transformation, as described by Steve Yedlin ASC.
 

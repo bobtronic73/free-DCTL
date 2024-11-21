@@ -2,20 +2,23 @@
 // Copyright (c) 2024 Matthias Bober
 
 
-DEFINE_UI_PARAMS(a1g, A R-G, DCTLUI_SLIDER_FLOAT, -0.371f, -1.0f, 1.0f, 0.001f)
-DEFINE_UI_PARAMS(a1b, A R-B, DCTLUI_SLIDER_FLOAT, -0.189f, -1.0f, 1.0f, 0.001f)
-DEFINE_UI_PARAMS(a2r, A G-R, DCTLUI_SLIDER_FLOAT, -0.125f, -1.0f, 1.0f, 0.001f)
-DEFINE_UI_PARAMS(a2b, A G-B, DCTLUI_SLIDER_FLOAT,  0.007f, -1.0f, 1.0f, 0.001f)
-DEFINE_UI_PARAMS(a3r, A B-R, DCTLUI_SLIDER_FLOAT,  0.030f, -1.0f, 1.0f, 0.001f)
-DEFINE_UI_PARAMS(a3g, A B-G, DCTLUI_SLIDER_FLOAT,  0.008f, -1.0f, 1.0f, 0.001f)
+DEFINE_UI_PARAMS(a1g, A R-G, DCTLUI_SLIDER_FLOAT, -0.361342f, -1.f, 1.f, 0.001f)
+DEFINE_UI_PARAMS(a1b, A R-B, DCTLUI_SLIDER_FLOAT, -0.154644f, -1.f, 1.f, 0.001f)
+DEFINE_UI_PARAMS(a2r, A G-R, DCTLUI_SLIDER_FLOAT, -0.128327f, -1.f, 1.f, 0.001f)
+DEFINE_UI_PARAMS(a2b, A G-B, DCTLUI_SLIDER_FLOAT,  0.109013f, -1.f, 1.f, 0.001f)
+DEFINE_UI_PARAMS(a3r, A B-R, DCTLUI_SLIDER_FLOAT,  -0.010510f, -1.f, 1.f, 0.001f)
+DEFINE_UI_PARAMS(a3g, A B-G, DCTLUI_SLIDER_FLOAT,  0.060833f, -1.f, 1.f, 0.001f)
 
-DEFINE_UI_PARAMS(m1g, R-G, DCTLUI_SLIDER_FLOAT, -0.275f, -1.0f, 1.0f, 0.001f)
-DEFINE_UI_PARAMS(m1b, R-B, DCTLUI_SLIDER_FLOAT,  0.013f, -1.0f, 1.0f, 0.001f)
-DEFINE_UI_PARAMS(m2r, G-R, DCTLUI_SLIDER_FLOAT, -0.196f, -1.0f, 1.0f, 0.001f)
-DEFINE_UI_PARAMS(m2b, G-B, DCTLUI_SLIDER_FLOAT, -0.143f, -1.0f, 1.0f, 0.001f)
-DEFINE_UI_PARAMS(m3r, B-R, DCTLUI_SLIDER_FLOAT, -0.331f, -1.0f, 1.0f, 0.001f)
-DEFINE_UI_PARAMS(m3g, B-G, DCTLUI_SLIDER_FLOAT, -0.289f, -1.0f, 1.0f, 0.001f)
+DEFINE_UI_PARAMS(m1g, R-G, DCTLUI_SLIDER_FLOAT, -0.284279f, -1.f, 1.f, 0.001f)
+DEFINE_UI_PARAMS(m1b, R-B, DCTLUI_SLIDER_FLOAT,  0.013176f, -1.f, 1.f, 0.001f)
+DEFINE_UI_PARAMS(m2r, G-R, DCTLUI_SLIDER_FLOAT, -0.127165f, -1.f, 1.f, 0.001f)
+DEFINE_UI_PARAMS(m2b, G-B, DCTLUI_SLIDER_FLOAT, -0.309264f, -1.f, 1.f, 0.001f)
+DEFINE_UI_PARAMS(m3r, B-R, DCTLUI_SLIDER_FLOAT, -0.129927f, -1.f, 1.f, 0.001f)
+DEFINE_UI_PARAMS(m3g, B-G, DCTLUI_SLIDER_FLOAT, -0.510286f, -1.f, 1.f, 0.001f)
 
+DEFINE_UI_PARAMS(dminr, Dmin R, DCTLUI_SLIDER_FLOAT, 0.003f, -1.f, 1.f, 0.001f)
+DEFINE_UI_PARAMS(dming, Dmin G, DCTLUI_SLIDER_FLOAT, 0.f, -1.f, 1.f, 0.001f)
+DEFINE_UI_PARAMS(dminb, Dmin B, DCTLUI_SLIDER_FLOAT, -0.026f, -1.f, 1.f, 0.001f)
 
 __CONSTANT__ float2 LUT_1D[11] =
 {
@@ -93,9 +96,9 @@ __DEVICE__ float3 transform(int p_Width, int p_Height, int p_X, int p_Y, float p
     b = (m3r * lgr) + (m3g * lgg) + ((1.0f - m3r - m3g) * lgb);
 
     // Convert Channel Dependent Density values to ADX10 values
-    r = (r * 500.f + 95.f) / 1023.f;
-    g = (g * 500.f + 95.f) / 1023.f;
-    b = (b * 500.f + 95.f) / 1023.f;
+    r = (r * (dminr + 1.f) * 500.f + 95.f) / 1023.f;
+    g = (g * (dming + 1.f) * 500.f + 95.f) / 1023.f;
+    b = (b * (dminb + 1.f) * 500.f + 95.f) / 1023.f;
 
 	return make_float3(r, g, b);
 }
