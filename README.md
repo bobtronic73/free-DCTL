@@ -4,14 +4,14 @@ a collection of DCTL files, mostly small helpers in DaVinci Resolve
 ## Color Matrix
 3x3 color matrix DCTL with option to invert the matrix. This is also known as RGB channel mixer. This DCTL is mostly targeted for technical or color space transforms.
 
-## color_math.h
-Header file with a growing collection of color math helper functions, such as marix transforms etc.
-
 ### Parameters
 * R-R, R-G, R-B: Red channel contribution (first row of 3x3 matrix)
 * G-R, G-G, G-B: Green channel contribution (second row of 3x3 matrix)
 * B-R, B-G, B-R: Blue channel contribution (third row of 3x3 matrix)
 * Invert: Inverts the matrix
+
+## color_math.h
+Header file with a growing collection of color math helper functions, such as marix transforms etc.
 
 ## Color Pizza
 Similar to DaVinci Resolve's Color Slice. It provides hue shift and saturation for the six primaries.
