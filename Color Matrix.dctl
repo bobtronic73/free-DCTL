@@ -20,10 +20,4 @@ __DEVICE__ float3 transform(int p_Width, int p_Height, int p_X, int p_Y, float p
     const float3 res = mult_f3_f33(make_float3(p_R, p_G, p_B), m);
 
     return res;
-
-	// const float r = (m1x * p_R) + (m1y * p_G) + (m1z * p_B);
-	// const float g = (m2x * p_R) + (m2y * p_G) + (m2z * p_B);
-	// const float b = (m3x * p_R) + (m3y * p_G) + (m3z * p_B);
-
-	// return make_float3(r, g, b);
 }
