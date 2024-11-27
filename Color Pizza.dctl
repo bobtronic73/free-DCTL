@@ -2,18 +2,18 @@
 // Slice Tool using tetrahedral transformation, Copyright (c) 2024 Matthias Bober
 // based on Tetra DCTL, Copyright (c) 2021 npeason
 
-DEFINE_UI_PARAMS(r_rot, R - Y-M, DCTLUI_SLIDER_FLOAT, 0.0f, -1.0f, 1.0f, 0.01f)
-DEFINE_UI_PARAMS(r_sat, R - Sat, DCTLUI_SLIDER_FLOAT, 0.0f, -1.0f, 1.0f, 0.01f)
-DEFINE_UI_PARAMS(y_rot, Y - G-R, DCTLUI_SLIDER_FLOAT,  0.0f, -1.0f, 1.0f, 0.01f)
-DEFINE_UI_PARAMS(y_sat, Y - Sat, DCTLUI_SLIDER_FLOAT, 0.0f, -1.0f, 1.0f, 0.01f)
-DEFINE_UI_PARAMS(g_rot, G - C-Y, DCTLUI_SLIDER_FLOAT, 0.0f, -1.0f, 1.0f, 0.01f)
-DEFINE_UI_PARAMS(g_sat, G - Sat, DCTLUI_SLIDER_FLOAT, 0.0f, -1.0f, 1.0f, 0.01f)
-DEFINE_UI_PARAMS(c_rot, C - B-G, DCTLUI_SLIDER_FLOAT,  0.0f, -1.0f, 1.0f, 0.01f)
-DEFINE_UI_PARAMS(c_sat, C - Sat, DCTLUI_SLIDER_FLOAT, 0.0f, -1.0f, 1.0f, 0.01f)
-DEFINE_UI_PARAMS(b_rot, B - M-C, DCTLUI_SLIDER_FLOAT,  0.0f, -1.0f, 1.0f, 0.01f)
-DEFINE_UI_PARAMS(b_sat, B - Sat, DCTLUI_SLIDER_FLOAT, 0.0f, -1.0f, 1.0f, 0.01f)
-DEFINE_UI_PARAMS(m_rot, M - R-B, DCTLUI_SLIDER_FLOAT,  0.0f, -1.0f, 1.0f, 0.01f)
-DEFINE_UI_PARAMS(m_sat, M - Sat, DCTLUI_SLIDER_FLOAT, 0.0f, -1.0f, 1.0f, 0.01f)
+DEFINE_UI_PARAMS(r_rot, R - Y-M, DCTLUI_SLIDER_FLOAT, 0.0f, -1.0f, 1.0f, 0.001f)
+DEFINE_UI_PARAMS(r_sat, R - Sat, DCTLUI_SLIDER_FLOAT, 0.0f, -1.0f, 1.0f, 0.001f)
+DEFINE_UI_PARAMS(y_rot, Y - G-R, DCTLUI_SLIDER_FLOAT,  0.0f, -1.0f, 1.0f, 0.001f)
+DEFINE_UI_PARAMS(y_sat, Y - Sat, DCTLUI_SLIDER_FLOAT, 0.0f, -1.0f, 1.0f, 0.001f)
+DEFINE_UI_PARAMS(g_rot, G - C-Y, DCTLUI_SLIDER_FLOAT, 0.0f, -1.0f, 1.0f, 0.001f)
+DEFINE_UI_PARAMS(g_sat, G - Sat, DCTLUI_SLIDER_FLOAT, 0.0f, -1.0f, 1.0f, 0.001f)
+DEFINE_UI_PARAMS(c_rot, C - B-G, DCTLUI_SLIDER_FLOAT,  0.0f, -1.0f, 1.0f, 0.001f)
+DEFINE_UI_PARAMS(c_sat, C - Sat, DCTLUI_SLIDER_FLOAT, 0.0f, -1.0f, 1.0f, 0.001f)
+DEFINE_UI_PARAMS(b_rot, B - M-C, DCTLUI_SLIDER_FLOAT,  0.0f, -1.0f, 1.0f, 0.001f)
+DEFINE_UI_PARAMS(b_sat, B - Sat, DCTLUI_SLIDER_FLOAT, 0.0f, -1.0f, 1.0f, 0.001f)
+DEFINE_UI_PARAMS(m_rot, M - R-B, DCTLUI_SLIDER_FLOAT,  0.0f, -1.0f, 1.0f, 0.001f)
+DEFINE_UI_PARAMS(m_sat, M - Sat, DCTLUI_SLIDER_FLOAT, 0.0f, -1.0f, 1.0f, 0.001f)
 
 
 __CONSTANT__ float max_angle = 2.09439510f;
