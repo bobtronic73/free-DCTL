@@ -1,0 +1,29 @@
+#include "color_math.h"
+
+DEFINE_UI_PARAMS(m1x, R-R, DCTLUI_VALUE_BOX, 1.f)
+DEFINE_UI_PARAMS(m1y, R-G, DCTLUI_VALUE_BOX, 0.f)
+DEFINE_UI_PARAMS(m1z, R-B, DCTLUI_VALUE_BOX, 0.f)
+DEFINE_UI_PARAMS(m2x, G-R, DCTLUI_VALUE_BOX, 0.f)
+DEFINE_UI_PARAMS(m2y, G-G, DCTLUI_VALUE_BOX, 1.f)
+DEFINE_UI_PARAMS(m2z, G-B, DCTLUI_VALUE_BOX, 0.f)
+DEFINE_UI_PARAMS(m3x, B-R, DCTLUI_VALUE_BOX, 0.f)
+DEFINE_UI_PARAMS(m3y, B-G, DCTLUI_VALUE_BOX, 0.f)
+DEFINE_UI_PARAMS(m3z, B-B, DCTLUI_VALUE_BOX, 1.f)
+DEFINE_UI_PARAMS(invert, Invert, DCTLUI_CHECK_BOX, 0)
+
+
+__DEVICE__ float3 transform(int p_Width, int p_Height, int p_X, int p_Y, float p_R, float p_G, float p_B)
+{
+    mat3 m = make_mat3(make_float3(m1x, m2x, m3x), make_float3(m1y, m2y, m3y), make_float3(m1z, m2z, m3z));
+    if (invert) m = invert_f33(m);
+
+    const float3 res = mult_f3_f33(make_float3(p_R, p_G, p_B), m);
+
+    return res;
+
+	// const float r = (m1x * p_R) + (m1y * p_G) + (m1z * p_B);
+	// const float g = (m2x * p_R) + (m2y * p_G) + (m2z * p_B);
+	// const float b = (m3x * p_R) + (m3y * p_G) + (m3z * p_B);
+
+	// return make_float3(r, g, b);
+}
