@@ -1,0 +1,88 @@
+// Sony S-Log3 False Colors replica
+// Copyright 2024 Matthias Bober
+
+
+__DEVICE__ inline float ConvertRGBToLum(float3 p_Val)
+{
+    return (0.299f * p_Val.x + 0.587f * p_Val.y + 0.114f * p_Val.z);
+}
+
+__DEVICE__ inline float ConvertToIRE(float p_Val)
+{
+    return  (p_Val * 876.0f + 64.0f) / 1023.0f;
+}
+
+
+
+__DEVICE__ float3 transform(int p_Width, int p_Height, int p_X, int p_Y, float p_R, float p_G, float p_B)
+{
+	const float lum = ConvertRGBToLum(make_float3(p_R, p_G, p_B));
+	
+	//black
+	if (lum <= ConvertToIRE(0.0f))
+	{
+		return make_float3(0.0f, 0.0f, 0.0f);
+	}
+
+	//purple
+	if (lum <= ConvertToIRE(0.023f))
+	{
+		return make_float3(0.35f, 0.125f, 0.53f);
+	}
+
+	//blue
+	if (lum >= ConvertToIRE(0.035f) && lum <= ConvertToIRE(0.056f))
+	{
+		return make_float3(0.0f, 0.0f, 1.0f);
+	}
+
+	//light blue
+	if (lum >= ConvertToIRE(0.246f) && lum <= ConvertToIRE(0.344f))
+	{
+		return make_float3(0.68f, 0.85f, 0.9f);
+	}
+
+	//green
+	if (lum >= ConvertToIRE(0.389f) && lum <= ConvertToIRE(0.422f))
+	{
+		return make_float3(0.0f, 1.0f, 0.0f);
+	}
+
+	//cyan
+	if (lum >= ConvertToIRE(0.438f) && lum <= ConvertToIRE(0.465f))
+	{
+		return make_float3(0.0f, 1.0f, 1.0f);
+	}
+
+	//light pink
+	if (lum >= ConvertToIRE(0.478f) && lum <= ConvertToIRE(0.508f))
+	{
+		return make_float3(1.0f, 0.6f, 1.0f);
+	}
+
+	//pink
+	if (lum >= ConvertToIRE(0.543f) && lum <= ConvertToIRE(0.58f))
+	{
+		return make_float3(1.0f, 0.43f, 1.0f);
+	}
+
+	//orange
+	if (lum >= ConvertToIRE(0.877f) && lum <= ConvertToIRE(0.906f))
+	{
+		return make_float3(1.0f, 0.68f, 0.0f);
+	}
+
+	//yellow
+	if (lum >= ConvertToIRE(0.913f) && lum <= ConvertToIRE(0.934f))
+	{
+		return make_float3(1.0f, 1.0f, 0.0f);
+	}
+
+	//red
+	if (lum >  ConvertToIRE(0.934f) && lum <= ConvertToIRE(0.961f))
+	{
+		return make_float3(1.0f, 0.0f, 0.0f);
+	}
+
+	return make_float3(lum, lum, lum);
+}
