@@ -46,6 +46,9 @@ It offers an exposure ramp with adjustable stops below and above middle gray as 
 * Base ISO: Base ISO, needed to calculate middle gray to gether with the exposure index
 * Show Gray: Enable to show middle gray value area
 
+## False Colors
+False Colors display for S-Log3. This is a replica of Sony's False Colors scheme.
+
 ## Normalized Color Matrix
 Applies a normalized color matrix to video footage. This simplifies the usual 3x3 matrix to six parameters. Tweaking the parameters will retain white balance.
 
